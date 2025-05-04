@@ -115,7 +115,7 @@ public class HospitalManagementSystem {
                 }
             }
 
-        } catch (SQLException e) {
+        }catch (SQLException e) {
             e.printStackTrace();
         }
         return false;
