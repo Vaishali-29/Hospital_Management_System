@@ -17,6 +17,9 @@ public class HospitalManagementSystem {
         Scanner scanner = new Scanner(System.in);
         try {
             Connection connection = DriverManager.getConnection(url, username, password);
+
+            System.out.println("Connected to DB: " + connection.getCatalog());
+
             Patient patient = new Patient(connection, scanner);
             Doctor doctor = new Doctor(connection);
             while (true) {
@@ -29,7 +32,7 @@ public class HospitalManagementSystem {
                 System.out.println("Enter your choice: ");
                 int choice = scanner.nextInt();
 
-                switch (choice) {
+                switch(choice) {
                     case 1:
                         // Add Patient
                         patient.addPatient();
@@ -51,7 +54,7 @@ public class HospitalManagementSystem {
                         System.out.println();
                         break;
                     case 5:
-                        System.out.println("ThankYou For Using Hospital Management System !");
+                        System.out.println("Thank You! For Using Hospital Management System !");
                         return;
                     default:
                         System.out.println("Enter valid choice!!");
@@ -59,7 +62,6 @@ public class HospitalManagementSystem {
                 }
             }
         } catch (SQLException e) {
-
             e.printStackTrace();
         }
     }
@@ -69,18 +71,18 @@ public class HospitalManagementSystem {
         int patientId = scanner.nextInt();
         System.out.println("Enter Doctor Id: ");
         int doctorId = scanner.nextInt();
-        System.out.print("Enter appointment date (YYY-MM-DD): ");
+        System.out.print("Enter appointment date (YYYY-MM-DD): ");
         String appointmentDate = scanner.next();
-        if (patient.getPatientById(patientId) && doctor.getDoctorById(doctorId)) {
-            if (checkDoctorAvailability(doctorId, appointmentDate, connection)) {
-                String appointmentQuery = "INSERT INTO appointments(patient_id, doctor_id appointment_date) VALUES(?,?,?)";
+        if(patient.getPatientById(patientId) && doctor.getDoctorById(doctorId)) {
+            if(checkDoctorAvailability(doctorId, appointmentDate, connection)) {
+                String appointmentQuery = "INSERT INTO appointments(patient_id, doctor_id, appointment_date) VALUES(?,?,?)";
                 try {
                     PreparedStatement preparedStatement = connection.prepareStatement(appointmentQuery);
                     preparedStatement.setInt(1, patientId);
-                    preparedStatement.setInt(1, doctorId);
-                    preparedStatement.setInt(1, Integer.parseInt(appointmentDate));
+                    preparedStatement.setInt(2, doctorId);
+                    preparedStatement.setString(3, appointmentDate);
                     int rowsAffected = preparedStatement.executeUpdate();
-                    if (rowsAffected > 0) {
+                    if(rowsAffected > 0) {
                         System.out.println("Appointment Booked!");
                     } else {
                         System.out.println("Failed to Book Appointment!");
@@ -98,17 +100,17 @@ public class HospitalManagementSystem {
     }
 
     private static boolean checkDoctorAvailability(int doctorId, String appointmentDate, Connection connection) {
-        String query = "SELECT COUNT(*) FROM appointments WHERE doctor-id = ? AND appointment-date = ?";
+        String query = "SELECT COUNT(*) FROM appointments WHERE doctor_id = ? AND appointment_date = ?";
         try {
             PreparedStatement preparedStatement = connection.prepareStatement(query);
             preparedStatement.setInt(1, doctorId);
-            preparedStatement.setInt(2, Integer.parseInt(appointmentDate));
+            preparedStatement.setString(2, appointmentDate);
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
                 int count = resultSet.getInt(1);
-                if (count == 0) {
+                if(count == 0) {
                     return true;
-                } else {
+                }else {
                     return false;
                 }
             }
