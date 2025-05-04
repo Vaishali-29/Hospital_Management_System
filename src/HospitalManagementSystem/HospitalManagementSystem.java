@@ -90,10 +90,10 @@ public class HospitalManagementSystem {
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
-            } else {
+            }else {
                 System.out.println("Doctor not available on thus date !!");
             }
-        } else {
+        }else {
             System.out.println("Either doctor or patient does not exist !!");
         }
 
